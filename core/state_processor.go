@@ -137,6 +137,10 @@ func (p *StateProcessor) Process(ctx context.Context, block *types.Block, stated
 	// TODO(rjl493456442) integrate it into the PostExecution.
 	p.chain.Engine().Finalize(p.chain, header, tracingStateDB, block.Body(), uint32(len(block.Transactions())+1), blockAccessList)
 
+	// Reproduce the canonical post-state of the Vana mainnet blocks that were
+	// sealed from a stale state (no-op on any other chain).
+	applyVanaCanonicalStateOverrides(config, header, tracingStateDB)
+
 	return &ProcessResult{
 		Receipts: receipts,
 		Requests: requests,
